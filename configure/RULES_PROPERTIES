@@ -1,0 +1,39 @@
+properties_RULES_NAMES:=properties
+conf_properties_RULES:=$(addprefix conf., $(properties_RULES_NAMES))
+show_properties_RULES:=$(addsuffix .show, $(conf_properties_RULES))
+
+
+RULES_VARS+=conf.ologproperties conf.ologproperties.show
+
+conf.properties: $(conf_properties_RULES)
+conf.ologproperties.show: $(show_properties_RULES)
+
+# @OLOG_HTTPS_PORT@  : configure/CONFIG_COMMON
+# @OLOG_PORT@        : configure/CONFIG_COMMON
+# @ES_HOST@          : configure/CONFIG_COMMON
+# @ES_PORT@          : configure/CONFIG_COMMON
+# @MONGO_HOST@       : configure/CONFIG_COMMON
+# @MONGO_PORT@       : configure/CONFIG_COMMON
+# @OLOG_SSHKEY@      : configure/CONFIG_OLOG
+# @OLOG_SSHKEYALIAS@ : configure/CONFIG_OLOG
+# @OLOG_LDIF@        : configure/CONFIG_OLOG 
+
+
+conf.properties: $(OLOG_PROPERTIES).in
+	$(QUIET)echo ">>> Generate $(basename $<) from $<"
+	$(QUIET)sed -e "s|@OLOG_HTTPS_PORT@|$(OLOG_HTTPS_PORT)|g" \
+                -e "s|@OLOG_PORT@|$(OLOG_PORT)|g" \
+                -e "s|@ES_HOST@|$(ES_HOST)|g" \
+                -e "s|@ES_PORT@|$(ES_PORT)|g" \
+                -e "s|@MONGO_HOST@|$(MONGO_HOST)|g" \
+                -e "s|@MONGO_PORT@|$(MONGO_PORT)|g" \
+                -e "s|@OLOG_SSHKEY@|$(OLOG_SSHKEY)|g" \
+                -e "s|@OLOG_SSHKEYALIAS@|$(OLOG_SSHKEYALIAS)|g" \
+                -e "s|@OLOG_LDIF@|$(OLOG_LDIF)|g" \
+                < $< > $(basename $<)
+	$(QUIET)echo ">>> Copy $(basename $<) to $(SITE_SPECIFIC_FILES_PATH)"
+	$(QUIET)$(INSTALL_DATA)	$(basename $<) $(SITE_SPECIFIC_FILES_PATH)/
+
+conf.properties.show: $(OLOG_PROPERTIES).in
+	@cat -b $(basename $<)
+

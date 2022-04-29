@@ -1,0 +1,22 @@
+# ### Placeholder
+# ### This variable will be replaced by reading a pom.xml file or others
+# ### It may be linked with SRC_VERSION in RELEASE file
+# ### 
+APPNAME_JAR_FILENAME:=${APPNAME}-2.0.jar
+### 
+### These two parameters are used to generate application.properties from application.properties.in
+###
+APPNAME_LDIF:=olog.ldif
+APPNAME_SSHKEYALIAS:=newcf
+APPNAME_SSHKEY:=$(APPNAME_SSHKEYALIAS).p12
+
+APPNAME_USERID:=Olog
+APPNAME_GROUPID:=$(APPNAME_USERID)
+
+APPNAME_PROPERTIES:=application.properties
+
+
+# These allow developers to override the variable
+-include $(TOP)/../CONFIG_APPNAME.local
+-include $(TOP)/configure/CONFIG_APPNAME.local
+

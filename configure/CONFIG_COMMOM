@@ -1,0 +1,30 @@
+
+JAVA_HOME:=/usr/lib/jvm/java-11-openjdk-amd64
+ANT_HOME:=/usr/share/ant
+MAVEN_HOME:=/usr/share/maven
+TOMCAT_HOME:=/usr/share/tomcat9
+
+JAVA_PATH:=$(JAVA_HOME)/bin
+ANT_PATH:=$(ANT_HOME)/bin
+MAVEN_PATH:=$(MAVEN_HOME)/bin
+
+
+
+## Elasticsearch Server
+#ES_HOST:=localhost
+#ES_PORT:=9200
+
+
+#CF_PRTO:=http
+#CF_HOST:=localhost
+#CF_PORT:=8080
+#
+#
+
+# These allow developers to override the variable
+-include $(TOP)/../CONFIG_COMMON.local
+-include $(TOP)/configure/CONFIG_COMMON.local
+-include $(TOP)/configure/CONFIG_COMMON_JDK.local
+-include $(TOP)/configure/CONFIG_COMMON_ANT.local
+-include $(TOP)/configure/CONFIG_COMMON_MAVEN.local
+
