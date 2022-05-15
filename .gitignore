@@ -47,3 +47,8 @@ auto_positions.sav*
 .versions
 *-src
 env-template/
+site-template/*.bash
+site-template/*.conf
+site-template/systemd/*.service
+site-template/*.properties
+site-template/systemd/override.conf

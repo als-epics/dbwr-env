@@ -191,23 +191,23 @@ function usage
 case "$1" in
     startup)
 	    startup_application
-	    ;;
+	;;
     shutdown)
 	    shutdown_application
-	    ;;
+	;;
     restart)
 	    startup_application
 	    shutdown_application
-	    ;;
+	;;
     status)
 	    status_application
-	    ;;
+	;;
     h);;
     help)
         usage;
-        ;;
+    ;;
     *)
-	    usage;
+        usage;
     ;;
 esac
 

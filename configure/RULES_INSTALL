@@ -2,7 +2,7 @@
 SERVICES_INSTALL_RULES:=
 $(call buildrules_BUILDER,$(USERID),$(GROUPID),$(INSTALL_LOCATION),$(INSTALL_LOCATION_SERVICES),SERVICES_INSTALL_RULES)
 #conf_RULES_NAMES:=log4j appliances properties policies serverxml 
-conf_RULES_NAMES:=log4j confpvws serverxml mainscript
+conf_RULES_NAMES:=log4j confdbwr serverxml mainscript
 conf_install_RULES:=$(addsuffix .install, $(conf_RULES_NAMES))
 show_conf_RULES:=$(addsuffix .show, serverxml mainscript)
 
@@ -19,11 +19,11 @@ log4j.install: log4j.properties
 	$(QUIET)echo ">>> Install $< into $(TOMCAT_HOME)/lib/"
 	$(QUIET)sudo install $< $(TOMCAT_HOME)/lib/
 
-confpvws.install: $(APPNAME_CONF)
+confdbwr.install: $(APPNAME_CONF)
 	$(QUIET)echo ">>> Install $< into $(INSTALL_LOCATION)/"
 	$(QUIET)$(SUDO) install $< $(INSTALL_LOCATION)/
 
-confpvws.show: $(APPNAME_CONF)
+confdbwr.show: $(APPNAME_CONF)
 	$(QUIET)echo ">>> Show the installed $(INSTALL_LOCATION)/$(patsubst $(SITE_TEMPLATE_PATH)/%,%,$<) "
 	$(QUIET)cat -bs $(INSTALL_LOCATION)/$(patsubst $(SITE_TEMPLATE_PATH)/%,%,$<)
 
@@ -44,14 +44,14 @@ confpvws.show: $(APPNAME_CONF)
 
 # all other ports are disable by default from $(TOMCAT_HOME)/skel/conf/server.i
 # 2022-05-16 APPNAME_SERVICES 
-# pvws
+# dbwr
 #
 serverxml.install:
 	$(QUIET)echo ">>> Update  $(INSTALL_LOCATION)/*/conf/server.xml to use the proper port numbers "
-	$(QUIET)sudo sed -i.bak -e 's|Connector port="8080"|Connector port="$(APPNAME_PVWS_PORT)"|g' -e 's|Server port="-1" shutdown="SHUTDOWN"|Server port="$(APPNAME_PVWS_SHUTDOWN_PORT)" shutdown="SHUTDOWN"|g' $(INSTALL_LOCATION)/pvws/conf/server.xml
+	$(QUIET)sudo sed -i.bak -e 's|Connector port="8080"|Connector port="$(APPNAME_DBWR_PORT)"|g' -e 's|Server port="-1" shutdown="SHUTDOWN"|Server port="$(APPNAME_DBWR_SHUTDOWN_PORT)" shutdown="SHUTDOWN"|g' $(INSTALL_LOCATION)/dbwr/conf/server.xml
 
 serverxml.show:
-	$(QUIET)cat -b $(INSTALL_LOCATION)/pvws/conf/server.xml
+	$(QUIET)cat -b $(INSTALL_LOCATION)/dbwr/conf/server.xml
 
 mainscript.install: $(APPNAME_MAIN_SCRIPT)
 	$(QUIET)echo ">>> Install $< into $(INSTALL_LOCATION)/"
@@ -104,8 +104,8 @@ src_version: FORCE
 	$(QUIET)printf ">> Timestamps       : YYYYMMDD-HHMMSS (%s)\n" "$$(date +%Y%m%d-%H%M%S)" > $(SITE_TEMPLATE_PATH)/.versions
 	$(QUIET)printf ">> SRC REMOTE URL   : %s\n" "$(SRC_GITURL)"  >> $(SITE_TEMPLATE_PATH)/.versions
 	$(QUIET)printf ">> SRC SITE VERSION : %s\n" "$(SRC_TAG)"     >> $(SITE_TEMPLATE_PATH)/.versions
-	$(QUIET)printf ">> SRC GIT  VERSION : "            >> $(SITE_TEMPLATE_PATH)/.versions
-	$(QUIET)cd $(SRC_PATH) && git describe --tags      >> $(SITE_TEMPLATE_PATH)/.versions
+	$(QUIET)printf ">> SRC GIT  VERSION : "                      >> $(SITE_TEMPLATE_PATH)/.versions
+	$(QUIET)cd $(SRC_PATH) && git describe --tags                >> $(SITE_TEMPLATE_PATH)/.versions
 
 src_version.show:
 	$(QUIET)cat -b $(SITE_TEMPLATE_PATH)/.versions

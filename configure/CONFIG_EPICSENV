@@ -1,5 +1,4 @@
-# 
-# https://raw.githubusercontent.com/ornl-epics/pvws/main/README.md
+# DBWR doesn't need the EPICS Envrionment 
 #
 # Don't need to use ", please see the examples below
 #EPICS_CA_ADDR_LIST?=localhost

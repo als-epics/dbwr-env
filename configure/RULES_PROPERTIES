@@ -4,9 +4,9 @@
 ## APPNAME_LOG4JPROPERTIES:=log4j.properties
 ## 2. pvws specific configuration file
 ## ---> $(INSTALL_LOCATION)
-## APPNAME_CONF:=pvws.conf
+## APPNAME_CONF:=dbwr.conf
 
-properties_RULES_NAMES:=pvws log4j mainscript
+properties_RULES_NAMES:=dbwr log4j mainscript
 
 #
 conf_properties_RULES:=$(addprefix conf., $(properties_RULES_NAMES))
@@ -65,39 +65,29 @@ conf.mainscript: $(APPNAME_MAIN_SCRIPT).in
 			    -e "s|@APPFULLNAME@|"$(APPFULLNAME)"|g" \
 	            -e "s|@APPNAME@|$(APPNAME)|g" \
 				-e "s|@APPNAME_SERVICES@|$(APPNAME_SERVICES)|g" \
-				-e "s|@APPNAME_PVWS_PORT@|$(APPNAME_PVWS_PORT)|g" \
-				-e "s|@ARCHAPPL_LONG_TERM_FOLDER@|$(ARCHAPPL_LONG_TERM_FOLDER)|g" \
+				-e "s|@APPNAME_DBWR_PORT@|$(APPNAME_DBWR_PORT)|g" \
                < $< > $(basename $<)
 	
 conf.mainscript.show: $(APPNAME_MAIN_SCRIPT).in
 	@cat -b $(basename $<)
 
-conf.pvws: $(APPNAME_CONF).in 
+conf.dbwr: $(APPNAME_CONF).in 
 	$(QUIET) echo ">>> Generate $(basename $<) from $<"
 	$(QUIET)sed -e "s:@INSTALL_LOCATION@:$(INSTALL_LOCATION):g" \
 			 -e "s|@APPFULLNAME@|"$(APPFULLNAME)"|g" \
 			 -e "s:@JAVA_HOME@:$(JAVA_HOME):g" -e "s|@JAVA_OPTS@|$(JAVA_OPTS)|g" \
-			 -e "s|@EPICS_CA_ADDR_LIST@|$(EPICS_CA_ADDR_LIST)|g" \
-			 -e "s:@EPICS_CA_AUTO_ADDR_LIST@:$(EPICS_CA_AUTO_ADDR_LIST):g" \
-			 -e "s:@EPICS_CA_MAX_ARRAY_BYTES@:$(EPICS_CA_MAX_ARRAY_BYTES):g" \
-			 -e "s|@EPICS_PVA_ADDR_LIST@|$(EPICS_PVA_ADDR_LIST)|g" \
-			 -e "s:@EPICS_PVA_AUTO_ADDR_LIST@:$(EPICS_PVA_AUTO_ADDR_LIST):g" \
-			 -e "s:@EPICS_PVA_BROADCAST_PORT@:$(EPICS_PVA_BROADCAST_PORT):g" \
-			 -e "s:@EPICS_PVA_NAME_SERVERS@:$(EPICS_PVA_NAME_SERVERS):g" \
-			 -e "s:@PV_THROTTLE_MS@:$(PV_THROTTLE_MS):g" \
-			 -e "s:@PV_ARRAY_THROTTLE_MS@:$(PV_ARRAY_THROTTLE_MS):g" \
-			 -e "s:@PV_WRITE_SUPPORT@:$(PV_WRITE_SUPPORT):g" \
 			 -e "s:@TOMCAT_HOME@:$(TOMCAT_HOME):g" -e "s|@CATALINA_OPTS@|$(CATALINA_OPTS)|g" \
 			< $< > $(basename $<)
 
-conf.pvws.show: $(APPNAME_CONF).in 
+conf.dbwr.show: $(APPNAME_CONF).in 
 	$(QUIET) echo ">>> $(basename $<)"
 	@cat -b $(basename $<)
 
 conf.log4j: log4j.properties.in
 	$(QUIET) echo ">>> Generate $(basename $<) from $<"
 	$(QUIET)sed -e "s:@APPNAME_ROOT_LOGGER_LEVEL@:$(APPNAME_ROOT_LOGGER_LEVEL):g" \
-			< $< > $(basename $<)
+	            -e "s|@APPNAME@|$(APPNAME)|g" \
+			    < $< > $(basename $<)
 
 conf.log4j.show: log4j.properties.in 
 	$(QUIET) echo ">>> $(basename $<)"
