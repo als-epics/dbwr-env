@@ -41,6 +41,8 @@ GROUPID:=$(USERID)
 # log4j_properties located in $(TOMCAT_HOME)/lib
 APPNAME_LOG4JPROPERTIES:=log4j.properties
 APPNAME_CONF:=${APPNAME}.conf
+
+
 # $(INSTALL_LOCATION)/*/conf
 APPNAME_CONTEXT_XML:=context.xml
 APPNAME_TOMCAT_STARTUP:=startup.sh

@@ -1,12 +1,16 @@
 # 
+# Do not use the prefix DBWR in other makefile variables
+SETTINGS_DBWR=$(sort $(filter DBWR%, $(.VARIABLES)))
+
+SETTINGS_DBWR_CONF:=${APPNAME}_settings.conf
 # URLs of displays to suggest on the start page.
-DBWR1?=
-DBWR2?=
+DBWR1?=DTDInsertion.bob
+DBWR2?=macros.bob
+DBWR3?=monitors_textupdate.bob
+DBWR4?=rules.bob
 
 # Regular expressions of allowed displays.
-WHITELIST1?=
-WHITELIST2?=
-#
+# Unfornately, Makefile cannot handle
 -include $(TOP)/../CONFIG_APPNAME.local
 -include $(TOP)/configure/CONFIG_APPNAME.local
 

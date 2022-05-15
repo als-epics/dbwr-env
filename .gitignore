@@ -52,3 +52,4 @@ site-template/*.conf
 site-template/systemd/*.service
 site-template/*.properties
 site-template/systemd/override.conf
+*.conf

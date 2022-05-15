@@ -74,11 +74,13 @@ build.mvn: info.mvn | mkdir.wars
 mkdir.wars:
 	@mkdir -p $(APPNAME_WARS_TARGET_PATH)
 
-.PHONY: conf build clean
+.PHONY: conf build clean conf.show
 
-build: conf build.mvn
+build: build.mvn
 
 conf: conf.properties
+
+conf.show: conf.properties.show
 
 clean: clean.mvn
 

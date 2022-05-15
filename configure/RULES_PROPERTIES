@@ -2,11 +2,12 @@
 ## 1. log4j
 ## ---> $(TOMCAT_HOME)/lib 
 ## APPNAME_LOG4JPROPERTIES:=log4j.properties
-## 2. pvws specific configuration file
+## 2. dbwr specific configuration file
 ## ---> $(INSTALL_LOCATION)
 ## APPNAME_CONF:=dbwr.conf
+## SETTINGS_DBWR_CONF:=dbwr_settings.conf
 
-properties_RULES_NAMES:=dbwr log4j mainscript
+properties_RULES_NAMES:=dbwr dbwr_settings log4j mainscript
 
 #
 conf_properties_RULES:=$(addprefix conf., $(properties_RULES_NAMES))
@@ -63,7 +64,7 @@ conf.mainscript: $(APPNAME_MAIN_SCRIPT).in
 	$(QUIET) echo ">>> Generate output, $(basename $<) from $<"
 	$(QUIET)sed -e "s:@INSTALL_LOCATION@:$(INSTALL_LOCATION):g" \
 			    -e "s|@APPFULLNAME@|"$(APPFULLNAME)"|g" \
-	            -e "s|@APPNAME@|$(APPNAME)|g" \
+	            -e "s|@APPNAME@|$(APPNiME)|g" \
 				-e "s|@APPNAME_SERVICES@|$(APPNAME_SERVICES)|g" \
 				-e "s|@APPNAME_DBWR_PORT@|$(APPNAME_DBWR_PORT)|g" \
                < $< > $(basename $<)
@@ -82,6 +83,22 @@ conf.dbwr: $(APPNAME_CONF).in
 conf.dbwr.show: $(APPNAME_CONF).in 
 	$(QUIET) echo ">>> $(basename $<)"
 	@cat -b $(basename $<)
+
+.PHONY: conf.dbwr_settings.init $(SETTINGS_DBWR)
+
+conf.dbwr_settings: conf.dbwr_settings.init $(SETTINGS_DBWR) 
+
+conf.dbwr_settings.init: $(SETTINGS_DBWR_CONF)
+	@$(shell [ -e $< ] && rm -- $< )
+	@touch $<
+
+$(SETTINGS_DBWR): %: $(SETTINGS_DBWR_CONF)
+	@echo "$*=\"$($*)\""                           >> $<
+	@echo "WHITELIST$(patsubst DBWR%,%,$(*))=\"\"" >> $<
+
+conf.dbwr_settings.show: $(SETTINGS_DBWR_CONF)
+	$(QUIET) echo ">>> $<"
+	@cat -b $<
 
 conf.log4j: log4j.properties.in
 	$(QUIET) echo ">>> Generate $(basename $<) from $<"

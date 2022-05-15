@@ -3,7 +3,7 @@
 set -a
 # shellcheck source=/dev/null
 . "@APPNAME_TOP@/dbwr.conf"
-. "@APPNAME_TOP@/dbwr_settingis.conf"
+. "@APPNAME_TOP@/dbwr_settings.conf"
 set +a
 
 export CATALINA_BASE="@INSTALL_LOCATION@"

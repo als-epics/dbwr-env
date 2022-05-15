@@ -2,7 +2,7 @@
 SERVICES_INSTALL_RULES:=
 $(call buildrules_BUILDER,$(USERID),$(GROUPID),$(INSTALL_LOCATION),$(INSTALL_LOCATION_SERVICES),SERVICES_INSTALL_RULES)
 #conf_RULES_NAMES:=log4j appliances properties policies serverxml 
-conf_RULES_NAMES:=log4j confdbwr serverxml mainscript
+conf_RULES_NAMES:=log4j confdbwr confdbwr_settings serverxml mainscript
 conf_install_RULES:=$(addsuffix .install, $(conf_RULES_NAMES))
 show_conf_RULES:=$(addsuffix .show, serverxml mainscript)
 
@@ -26,6 +26,16 @@ confdbwr.install: $(APPNAME_CONF)
 confdbwr.show: $(APPNAME_CONF)
 	$(QUIET)echo ">>> Show the installed $(INSTALL_LOCATION)/$(patsubst $(SITE_TEMPLATE_PATH)/%,%,$<) "
 	$(QUIET)cat -bs $(INSTALL_LOCATION)/$(patsubst $(SITE_TEMPLATE_PATH)/%,%,$<)
+
+confdbwr_settings.install: $(SETTINGS_DBWR_CONF)
+	$(QUIET)echo ">>> Install $< into $(INSTALL_LOCATION)/"
+	$(QUIET)$(SUDO) install $< $(INSTALL_LOCATION)/
+
+# SETTINGS_DBWR_CONF is generated in $(TOP)
+# 
+confdbwr_settings.show: $(SETTINGS_DBWR_CONF)
+	$(QUIET)echo ">>> Show the installed $(INSTALL_LOCATION)/$< "
+	$(QUIET)cat -bs $(INSTALL_LOCATION)/$<
 
 # Three files are moved into $(ARCHAPPL_SITEID_CLASSPATHFILES_PATH) 
 # before build.ant. So these files are locatedin war files automatically.

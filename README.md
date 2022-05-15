@@ -48,9 +48,15 @@ TOMCAT_VER = 9.0.58
 
 ## Build, install, and Service
 
-* 
+
 ```
 make init
+make conf
+make conf.show
+```
+Note that `dbwr_settings.conf` file is generated in `TOP`. Please update `WHITELIST` variables accordingly. Makefile cannot handle Regular expression. One shoud add them manually into a generated configuration file `dbwr_settings.conf`. The list of `WHITELIST` will be generated according to the list of `DBWR` in `CONFIG_APPNAME`.
+
+```
 make build
 make install
 make exist

@@ -11,6 +11,7 @@ vpath %.bash $(SITE_TEMPLATE_PATH)
 vpath %.war $(TOP)
 vpath %.jar $(TOP)
 vpath %.conf $(SITE_TEMPLATE_PATH)
+vpath %.conf $(TOP)
 vpath usergroup.* $(SITE_TEMPLATE_PATH)
 
 include $(TOP)/configure/RULES_FUNC
