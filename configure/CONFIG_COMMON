@@ -1,25 +1,15 @@
 
-JAVA_HOME:=/usr/lib/jvm/java-11-openjdk-amd64
-ANT_HOME:=/usr/share/ant
+JAVA_HOME:=/usr/lib/jvm/default-java
 MAVEN_HOME:=/usr/share/maven
 TOMCAT_HOME:=/usr/share/tomcat9
 
 JAVA_PATH:=$(JAVA_HOME)/bin
-ANT_PATH:=$(ANT_HOME)/bin
 MAVEN_PATH:=$(MAVEN_HOME)/bin
 
-
-
-## Elasticsearch Server
-#ES_HOST:=localhost
-#ES_PORT:=9200
-
-
-#CF_PRTO:=http
-#CF_HOST:=localhost
-#CF_PORT:=8080
-#
-#
+PVWS?=localhost
+PVWS_PORT?=15577
+#URL of PV Web Socket when not co-located with dbwr.jar, for example ws://some.other.host.org:8081/pvws
+PVWS_URL:=ws://${PVWS}:${PVWS_PORT}/pvws
 
 # These allow developers to override the variable
 -include $(TOP)/../CONFIG_COMMON.local

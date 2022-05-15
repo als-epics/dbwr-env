@@ -1,18 +1,26 @@
 
 vpath %.in $(SITE_TEMPLATE_PATH)
+vpath %.in $(SITE_TEMPLATE_PATH)/systemd
+vpath %.service $(SITE_TEMPLATE_PATH)/systemd
 vpath %.xml $(SITE_TEMPLATE_PATH)
 vpath %.properties $(SITE_TEMPLATE_PATH)
 vpath %.local $(TOP)/configure
+vpath %.bash $(TOP)/scripts
+vpath %.sh $(TOP)/scripts
+vpath %.bash $(SITE_TEMPLATE_PATH)
+vpath %.war $(TOP)
+vpath %.jar $(TOP)
 vpath %.conf $(SITE_TEMPLATE_PATH)
 vpath usergroup.* $(SITE_TEMPLATE_PATH)
 
 include $(TOP)/configure/RULES_FUNC
 include $(TOP)/configure/RULES_PATCH
--include $(TOP)/configure/RULES_REQ
+include $(TOP)/configure/RULES_REQ
 include $(TOP)/configure/RULES_SRC
 include $(TOP)/configure/RULES_INSTALL
 include $(TOP)/configure/RULES_SYSTEMD
 -include $(TOP)/configure/RULES_DOCKER
 include $(TOP)/configure/RULES_PROPERTIES
+include $(TOP)/configure/RULES_TOMCAT
 include $(TOP)/configure/RULES_VARS
 

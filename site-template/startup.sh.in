@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -a
+# shellcheck source=/dev/null
+. "@APPNAME_TOP@/dbwr.conf"
+. "@APPNAME_TOP@/dbwr_settingis.conf"
+set +a
+
+export CATALINA_BASE="@INSTALL_LOCATION@"
+export CATALINA_PID="@INSTALL_LOCATION@/temp/@SERVICE_NAME@.pid"
+"${CATALINA_HOME}/bin/startup.sh" "$@"
+printf ">>> %s Service @SERVICE_NAME@ started\n" "${APPFULLNAME}"

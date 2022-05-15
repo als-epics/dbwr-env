@@ -1,40 +1,121 @@
-.PHONY: install uninstall src_install src_uninstall
+#
+SERVICES_INSTALL_RULES:=
+$(call buildrules_BUILDER,$(USERID),$(GROUPID),$(INSTALL_LOCATION),$(INSTALL_LOCATION_SERVICES),SERVICES_INSTALL_RULES)
+#conf_RULES_NAMES:=log4j appliances properties policies serverxml 
+conf_RULES_NAMES:=log4j confpvws serverxml mainscript
+conf_install_RULES:=$(addsuffix .install, $(conf_RULES_NAMES))
+show_conf_RULES:=$(addsuffix .show, serverxml mainscript)
 
-install: src_install sd_install sd_enable
-uninstall: src_uninstall
+.PHONY: install services.install 
 
-
-src_install: src_version src_preinst
-	$(if $(wildcard $(INSTALL_LOCATION)), $(QUIET)$(SUDO) mv $(INSTALL_LOCATION) $(INSTALL_LOCATION)_backup_$$(date +%Y%m%d-%H%M%S))
-	$(QUIET)$(SUDO) install -d $(INSTALL_LOCATION)
-	$(QUIET)$(SUDO) $(INSTALL_DATA) -b $(SITE_TEMPLATE_PATH)/.versions  $(INSTALL_LOCATION)/
-	$(QUIET)$(SUDO) cp -rp $(SRC_PATH)/appserver/distributions/payara/target/stage/payara5/*  $(INSTALL_LOCATION)/
+install: src_install services.install sd_install sd_enable
 	$(QUIET)$(SUDO)	chown -R $(USERID):$(GROUPID) $(INSTALL_LOCATION)
 
-src_uninstall: sd_stop sd_disable sd_clean src_postrm src_version_clean
+services.install: $(SERVICES_INSTALL_RULES) $(conf_install_RULES) 
+
+#services.install: $(SERVICES_INSTALL_RULES)
+
+log4j.install: log4j.properties
+	$(QUIET)echo ">>> Install $< into $(TOMCAT_HOME)/lib/"
+	$(QUIET)sudo install $< $(TOMCAT_HOME)/lib/
+
+confpvws.install: $(APPNAME_CONF)
+	$(QUIET)echo ">>> Install $< into $(INSTALL_LOCATION)/"
+	$(QUIET)$(SUDO) install $< $(INSTALL_LOCATION)/
+
+confpvws.show: $(APPNAME_CONF)
+	$(QUIET)echo ">>> Show the installed $(INSTALL_LOCATION)/$(patsubst $(SITE_TEMPLATE_PATH)/%,%,$<) "
+	$(QUIET)cat -bs $(INSTALL_LOCATION)/$(patsubst $(SITE_TEMPLATE_PATH)/%,%,$<)
+
+# Three files are moved into $(ARCHAPPL_SITEID_CLASSPATHFILES_PATH) 
+# before build.ant. So these files are locatedin war files automatically.
+# Thus, we don't need them  
+#pvsw.install: $(ARCHAPPL_APPLIANCES)
+#	$(QUIET)echo ">>> Install $< into $(INSTALL_LOCATION)/"
+#	$(QUIET)$(SUDO) install $< $(INSTALL_LOCATION)/
+
+#properties.install: $(ARCHAPPL_PROPERTIES)
+#	$(QUIET)echo ">>> Install $< into $(INSTALL_LOCATION)/"
+#	$(QUIET)$(SUDO) install -o $(USERID) -g $(GROUPID) $< $(INSTALL_LOCATION)/
+
+#policies.install: $(ARCHAPPL_POLICIES)
+#	$(QUIET)echo ">>> Install $< into $(INSTALL_LOCATION)/"
+#	$(QUIET)$(SUDO) install -o $(USERID) -g $(GROUPID) $< $(INSTALL_LOCATION)/
+
+# all other ports are disable by default from $(TOMCAT_HOME)/skel/conf/server.i
+# 2022-05-16 APPNAME_SERVICES 
+# pvws
+#
+serverxml.install:
+	$(QUIET)echo ">>> Update  $(INSTALL_LOCATION)/*/conf/server.xml to use the proper port numbers "
+	$(QUIET)sudo sed -i.bak -e 's|Connector port="8080"|Connector port="$(APPNAME_PVWS_PORT)"|g' -e 's|Server port="-1" shutdown="SHUTDOWN"|Server port="$(APPNAME_PVWS_SHUTDOWN_PORT)" shutdown="SHUTDOWN"|g' $(INSTALL_LOCATION)/pvws/conf/server.xml
+
+serverxml.show:
+	$(QUIET)cat -b $(INSTALL_LOCATION)/pvws/conf/server.xml
+
+mainscript.install: $(APPNAME_MAIN_SCRIPT)
+	$(QUIET)echo ">>> Install $< into $(INSTALL_LOCATION)/"
+	$(QUIET)$(SUDO) install $< $(INSTALL_LOCATION)/
+
+mainscript.show: $(APPNAME_MAIN_SCRIPT)
+	$(QUIET)cat -bs $(INSTALL_LOCATION)/$(patsubst $(TOP)/scripts/%,%,$<)
+
+# It creates the installation folder $(INSTALL_LOCATION)
+src_install: src_version src_preinst
+#	$(if $(wildcard $(INSTALL_LOCATION)), $(QUIET)$(SUDO) mv $(INSTALL_LOCATION) $(INSTALL_LOCATION)_backup_$$(date +%Y%m%d-%H%M%S))
+	$(QUIET)$(SUDO) $(INSTALL) -d -o $(USERID) -g $(GROUPID) $(INSTALL_LOCATION)
+
+src_uninstall:
 	$(QUIET)echo "Removing $(INSTALL_LOCATION)..."
 	$(QUIET)$(SUDO) rm -rf $(INSTALL_LOCATION)/
 
 
-.PHONY: src_version src_preinst src_postrm src_version_clean
+.PHONY: src_preinst src_postrm
+
+ifeq ($(UNAME_S),Darwin)
+
+uninstall: src_uninstall
 
 src_preinst:
-	$(QUIET)$(SUDO) bash $(SITE_TEMPLATE_PATH)/usergroup.postinst "configure" "$(USERID)" "$(GROUPID)"
 
+src_postrm:
+
+endif
+
+ifeq ($(UNAME_S),Linux)
+# Don't need to run src_postrm
+uninstall: sd_stop sd_disable sd_clean
+	$(QUIET)echo "Removing $(INSTALL_LOCATION)..."
+	$(QUIET)$(SUDO) rm -rf $(INSTALL_LOCATION)/
+	$(QUIET)sudo systemctl daemon-reload
+# Debian Tomcat Service is already in the system
+# This rule for CentOS 8
+src_preinst:
+	$(QUIET)$(SUDO) bash $(SITE_TEMPLATE_PATH)/usergroup.postinst "configure" "$(USERID)" "$(GROUPID)"
+# Tomcat Service is already in the system
 src_postrm: 
 	$(QUIET)$(SUDO) bash $(SITE_TEMPLATE_PATH)/usergroup.postrm "purge" "$(USERID)"
+endif
+
+
+.PHONY: src_version src_version.show src_version.clean
 
 src_version: FORCE
-	$(QUIET)echo "Timestamps : $$(date +%Y%m%d-%H%M%S)/YYYYMMDD-HHMMSS" > $(SITE_TEMPLATE_PATH)/.versions
-	$(QUIET)echo "- SRC REMOTE URL   : $(SRC_GITURL)"  >> $(SITE_TEMPLATE_PATH)/.versions
-	$(QUIET)echo "- SRC SITE VERSION : $(SRC_TAG)"     >> $(SITE_TEMPLATE_PATH)/.versions
-	$(QUIET)echo "- SRC GIT  VERSION : "               >> $(SITE_TEMPLATE_PATH)/.versions
+	$(QUIET)printf ">> Timestamps       : YYYYMMDD-HHMMSS (%s)\n" "$$(date +%Y%m%d-%H%M%S)" > $(SITE_TEMPLATE_PATH)/.versions
+	$(QUIET)printf ">> SRC REMOTE URL   : %s\n" "$(SRC_GITURL)"  >> $(SITE_TEMPLATE_PATH)/.versions
+	$(QUIET)printf ">> SRC SITE VERSION : %s\n" "$(SRC_TAG)"     >> $(SITE_TEMPLATE_PATH)/.versions
+	$(QUIET)printf ">> SRC GIT  VERSION : "            >> $(SITE_TEMPLATE_PATH)/.versions
 	$(QUIET)cd $(SRC_PATH) && git describe --tags      >> $(SITE_TEMPLATE_PATH)/.versions
 
-src_version_clean:
+src_version.show:
+	$(QUIET)cat -b $(SITE_TEMPLATE_PATH)/.versions
+
+src_version.clean:
 	rm -rf $(SITE_TEMPLATE_PATH)/.versions
 
 FORCE:
+
+
 
 #reinstall: conf build install
 #restart: uninstall reinstall cf_start cf_status

@@ -1,0 +1,12 @@
+# 
+# URLs of displays to suggest on the start page.
+DBWR1?=
+DBWR2?=
+
+# Regular expressions of allowed displays.
+WHITELIST1?=
+WHITELIST2?=
+#
+-include $(TOP)/../CONFIG_APPNAME.local
+-include $(TOP)/configure/CONFIG_APPNAME.local
+

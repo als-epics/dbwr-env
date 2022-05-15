@@ -1,18 +1,18 @@
 
-APPNAME:=env-template
+APPNAME:=dbwr
 
 ## Where the Source repository SRC_URL/SRC_NAME
-##
-SRC_URL:=https://github.com/jeonghanlee
+#
+SRC_URL:=https://github.com/ornl-epics
 SRC_NAME:=${APPNAME}
 
 
-## Which the source tag / branch / hash id would like to use
-## 2020-04-21
-SRC_TAG:=master
+# Which the source tag / branch / hash id would like to use
+# 2020-04-21
+SRC_TAG:=tags/R0
 
-## Placeholder for the site-specific version control 
-SRC_VERSION:=master
+# Placeholder for the site-specific version control 
+SRC_VERSION:=0.0.1
 
 
 -include $(TOP)/../RELEASE.local

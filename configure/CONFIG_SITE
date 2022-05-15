@@ -1,17 +1,20 @@
 
-### channelfinder installation location
-INSTALL_LOCATION=/opt/${APPNAME}
+### $APPNAME installation location
+INSTALL_LOCATION=/opt/displaybuilderweb
 
 
-ANT_OPTS:=-Dant.home=$(ANT_HOME)
-ANT_OPTS+=-Dant.library.dir=$(ANT_HOME)/lib
-#ANT_OPTS+=--execdebug
-#ANT_OPTS+=-Dver=$(ARCHAPPL_VERSION)
-#ANT_OPTS+=-Dwardest=$(ARCHAPPL_WARS_TARGET_PATH)
-#ANT_OPTS+=-Dtomcathome=$(TOMCAT_HOME)
-#ANT_OPTS+=-Darchapplsite=$(ARCHAPPL_SITEID)
+APPNAME_TOP:=$(INSTALL_LOCATION)
+APPNAME_SITEID:=ALS
+APPNAME_VERSION:=$(SRC_VERSION)-$(APPNAME_SITEID)
+APPNAME_WARS_TARGET_PATH?=$(TOP)/$(SRC_PATH)/target
+APPFULLNAME:="EPICS Display Builder Web Runtime"
 
-MAVEN_OPTS:=
+
+WARS_TARGET?=$(APPNAME_WARS_TARGET_PATH)
+
+MAVEN_OPTS:="-Dversion=$(APPNAME_VERSION)"
+MAVEN_OPTS+="-Dfile=$(APPNAME_WARS_TARGET_PATH)"
+#MAVEN_OPTS+="-Dtomcathome=/opt/tomcat9"
 
 # export JAVA_OPTS="-XX:MaxPermSize=128M -XX:+UseG1GC -Xmx4G -Xms4G -ea"
 #
@@ -23,14 +26,28 @@ MAVEN_OPTS:=
 JAVA_HEAPSIZE="512m"
 JAVA_MAXMETASPACE="256m"
 ## https://stackoverflow.com/questions/58991966/what-java-security-egd-option-is-for
-## https://www.openssl.org/blog/blog/2017/08/12/random/
+# https://www.openssl.org/blog/blog/2017/08/12/random/
 JAVA_OPTS="-Djava.security.egd=file:/dev/./urandom"
-##
-#CATALINA_OPTS="-XX:MaxMetaspaceSize=$(JAVA_MAXMETASPACE)"
-#CATALINA_OPTS+="-Xms$(JAVA_HEAPSIZE)"
-#CATALINA_OPTS+="-Xmx$(JAVA_HEAPSIZE)"
-#CATALINA_OPTS+="-XX:+UseG1GC"
-#CATALINA_OPTS+="-ea"
+#
+CATALINA_OPTS="-XX:MaxMetaspaceSize=$(JAVA_MAXMETASPACE)"
+CATALINA_OPTS+="-Xms$(JAVA_HEAPSIZE)"
+CATALINA_OPTS+="-Xmx$(JAVA_HEAPSIZE)"
+CATALINA_OPTS+="-XX:+UseG1GC"
+CATALINA_OPTS+="-ea"
+
+USERID:=tomcat
+GROUPID:=$(USERID)
+
+# log4j_properties located in $(TOMCAT_HOME)/lib
+APPNAME_LOG4JPROPERTIES:=log4j.properties
+APPNAME_CONF:=${APPNAME}.conf
+# $(INSTALL_LOCATION)/*/conf
+APPNAME_CONTEXT_XML:=context.xml
+APPNAME_TOMCAT_STARTUP:=startup.sh
+APPNAME_TOMCAT_SHUTDOWN:=shutdown.sh
+APPNAME_MAIN_SCRIPT:=${APPNAME}.bash
+
+
 
 SYSTEMD_PATH:=/etc/systemd/system
 SYSTEMD_FILENAME:=${APPNAME}.service

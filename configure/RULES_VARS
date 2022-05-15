@@ -5,13 +5,20 @@ VARS_EXCLUDES+=.SHELLSTATUS
 VARS_EXCLUDES+=INIT_SRC
 VARS_EXCLUDES+=FILTER
 VARS_EXCLUDES+=LEVEL
-VARS_EXCLUDES+=$(filter JAVA_%, $(.VARIABLES))
+#VARS_EXCLUDES+=$(filter JAVA_%, $(.VARIABLES))
 VARS_EXCLUDES+=$(filter JAR_%, $(.VARIABLES))
+VARS_EXCLUDES+=$(filter %_BUILDER, $(.VARIABLES))
 VARS_EXCLUDES+=$(RULES_VARS)
 VARS_EXCLUDES+=RULES_VARS
 VARS_EXCLUDES+=%_BUILDER
 VARS_EXCLUDES+=LSOPTS
 VARS_EXCLUDES+=UNAME_%
+VARS_EXCLUDES+=install
+VARS_EXCLUDES+=clean
+VARS_EXCLUDES+=echo
+VARS_EXCLUDES+=$(filter -%, $(.VARIABLES))
+VARS_EXCLUDES+=$(filter "%, $(.VARIABLES))
+VARS_EXCLUDES+=$(filter @%, $(.VARIABLES))
 
 .PHONY: $(RULES_VARS)
 
@@ -36,7 +43,7 @@ vars: _header
 _header:
 	$(QUIET)echo ""
 	$(QUIET)echo "------------------------------------------------------------"
-	$(QUIET)echo ">>>>          Current Envrionment Variables             <<<<"
+	$(QUIET)echo ">>>>          Current Environment Variables             <<<<"
 	$(QUIET)echo "------------------------------------------------------------"
 	$(QUIET)echo ""
 

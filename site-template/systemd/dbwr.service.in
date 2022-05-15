@@ -1,0 +1,19 @@
+[Unit]
+Description=@APPFULLNAME@ for @APPNAME_SITEID@
+Documentation=@DOCURL@
+After=network.target
+
+SourcePath=@INSTALL_LOCATION@/@APPNAME_MAIN_SCRIPT@
+
+[Service]
+#
+User=@USERID@
+Group=@GROUPID@
+#
+ExecStart=/bin/bash -c "@INSTALL_LOCATION@/@APPNAME_MAIN_SCRIPT@ startup"
+ExecStop=/bin/bash -c "@INSTALL_LOCATION@/@APPNAME_MAIN_SCRIPT@ shutdown"
+Type=forking
+
+[Install]
+WantedBy=multi-user.target
+Alias=displaybuilderweb.service

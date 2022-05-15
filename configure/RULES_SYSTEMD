@@ -1,47 +1,138 @@
 #
 #
-.PHONY: sd_config sd_install sd_status sd_start sd_stop sd_restart sd_clean sd_enable sd_disable
+.PHONY: sd_install sd_status sd_start sd_stop sd_restart sd_clean sd_enable sd_disable
 #
 #
-sd_config:
-	$(QUIET)sed -e "s:@TARGET_NAME@:$(APPNAME):g" \
-		-e "s:@JAVA_PATH@:$(JAVA_PATH):g" \
-		-e "s:@USERID@:$(USERID):g"      \
-		-e "s:@GROUPID@:$(GROUPID):g"    \
-		-e "s|@DOCURL@|$(DOCURL)|g"      \
-		-e "s:@INSTALL_LOCATION@:$(INSTALL_LOCATION):g" \
-		< $(SITE_TEMPLATE_PATH)/systemd.service.in > $(SITE_TEMPLATE_PATH)/$(SYSTEMD_FILENAME)
+
+systemd_RULES_NAMES:=override systemd0
+conf_systemd_RULES:=$(addprefix conf., $(systemd_RULES_NAMES))
+show_systemd_RULES:=$(addsuffix .show, $(conf_systemd_RULES))
+install_systemd_RULES:=$(addprefix install., $(systemd_RULES_NAMES))
+show_install_systemd_RULES:=$(addsuffix .show, $(install_systemd_RULES))
+
+ifeq ($(UNAME_S),Darwin)
+sd_install:
+sd_enable:
+endif
+
+ifeq ($(UNAME_S),Linux)
+sd_install: conf.systemd install.systemd
+	$(QUIET)sudo systemctl daemon-reload
+endif
+
+.PHONY: conf.systemd conf.systemd.show
+
+conf.systemd: $(conf_systemd_RULES)
+
+conf.systemd.show: $(show_systemd_RULES)
+
+install.systemd: $(install_systemd_RULES)
+
+install.systemd.show: $(show_install_systemd_RULES)
+
+# /etc/systemd/system/tomcat9.service.d/
+conf.override: $(SYSTEMD_OVERRIDE_FILENAME).in
+	$(QUIET) echo ">>> Generate $(basename $<) from $<"
+	$(QUIET)sed -e "s:@INSTALL_LOCATION@:$(INSTALL_LOCATION):g" \
+                < $< > $(basename $<)
+
+conf.override.show: $(SYSTEMD_OVERRIDE_FILENAME).in
+	@cat -b $(basename $<)
+
+conf.systemd0: $(SYSTEMD_FILENAME).in
+	$(QUIET)echo ">>> Generate $(basename $<) from $<"
+	$(QUIET)sed -e "s|@DOCURL@|$(DOCURL)|g" \
+				-e "s|@APPFULLNAME@|"$(APPFULLNAME)"|g" \
+				-e "s:@USERID@:$(USERID):g" \
+				-e "s:@GROUPID@:$(GROUPID):g" \
+				-e "s:@INSTALL_LOCATION@:$(INSTALL_LOCATION):g" \
+				-e "s:@APPNAME_MAIN_SCRIPT@:$(APPNAME_MAIN_SCRIPT):g" \
+				-e "s:@APPNAME_SITEID@:$(APPNAME_SITEID):g" \
+                < $< > $(basename $<)
+
+conf.systemd0.show: $(SYSTEMD_FILENAME).in
+	@cat -b $(basename $<)
+
+install.override: $(SYSTEMD_OVERRIDE_FILENAME).in
+	$(QUIET)sudo $(INSTALL) -d  $(SYSTEMD_PATH)/tomcat9.service.d/
+	$(QUIET)sudo $(INSTALL_DATA) -b $(basename $<) $(SYSTEMD_PATH)/tomcat9.service.d/
+
+install.override.show: 
+	$(QUIET)cat -b $(SYSTEMD_PATH)/tomcat9.service.d/$(SYSTEMD_OVERRIDE_FILENAME)
+
+install.systemd0: $(SYSTEMD_FILENAME).in
+	$(QUIET)sudo $(INSTALL_DATA) -b $(basename $<) $(SYSTEMD_PATH)/
+
+install.systemd0.show:
+	$(QUIET)cat -b $(SYSTEMD_PATH)/$(SYSTEMD_FILENAME)
 #
 #	
-sd_install: sd_config
-	$(QUIET)$(SUDO) $(INSTALL_DATA) -b $(SITE_TEMPLATE_PATH)/$(SYSTEMD_FILENAME) $(SYSTEMD_PATH)/
-	$(QUIET)$(SUDO) systemctl daemon-reload
-#
-#	
+
+ifeq ($(UNAME_S),Linux)
 sd_status:
 	$(QUIET) systemctl status -l $(SYSTEMD_FILENAME) | cat -b
-#
+
 #
 sd_start:
-	$(QUIET)$(SUDO) systemctl start $(SYSTEMD_FILENAME)
+	$(QUIET)sudo systemctl start $(SYSTEMD_FILENAME)
 #
 # We ignore its error
 sd_stop:
-	-$(QUIET)$(SUDO) systemctl stop $(SYSTEMD_FILENAME)
+	-$(QUIET)sudo systemctl stop $(SYSTEMD_FILENAME)
 #
 #
 sd_restart:
-	$(QUIET)$(SUDO) systemctl restart $(SYSTEMD_FILENAME)
+	$(QUIET)sudo systemctl restart $(SYSTEMD_FILENAME)
 #
 # We ignore its error
 sd_clean:
-	$(if $(wildcard $(SYSTEMD_PATH)/$(SYSTEMD_FILENAME)), $(QUIET)$(SUDO) rm -f $(SYSTEMD_PATH)/$(SYSTEMD_FILENAME))
+	$(if $(wildcard $(SYSTEMD_PATH)/$(SYSTEMD_FILENAME)), $(QUIET)sudo rm -f $(SYSTEMD_PATH)/$(SYSTEMD_FILENAME))
 #
 #
 sd_enable:
-	$(if $(wildcard $(SYSTEMD_PATH)/$(SYSTEMD_FILENAME)), $(SUDO) systemctl enable $(SYSTEMD_FILENAME))
+	$(if $(wildcard $(SYSTEMD_PATH)/$(SYSTEMD_FILENAME)), sudo systemctl enable $(SYSTEMD_FILENAME))
 #
 #
 sd_disable:
-	$(if $(wildcard $(SYSTEMD_PATH)/$(SYSTEMD_FILENAME)), $(SUDO) systemctl disable $(SYSTEMD_FILENAME))
+	$(if $(wildcard $(SYSTEMD_PATH)/$(SYSTEMD_FILENAME)), sudo systemctl disable $(SYSTEMD_FILENAME))
 #
+endif
+#
+# launchctl for MacOS
+conf.launch: $(LAUNCH_PLIST_FILENAME).in
+	$(QUIET)echo ">>> Generate $(basename $<) from $<"
+	$(QUIET)sed -e "s:@INSTALL_LOCATION@:$(INSTALL_LOCATION):g" \
+				-e "s:@APPNAME_MAIN_SCRIPT@:$(APPNAME_MAIN_SCRIPT):g" \
+				-e "s:@USERID@:$(USERID):g" \
+				-e "s:@GROUPID@:$(GROUPID):g" \
+                < $< > $(basename $<)
+
+conf.launch.show: $(LAUNCH_PLIST_FILENAME).in
+	@cat -b $(basename $<)
+
+
+ifeq ($(UNAME_S),Darwin)
+install.launch: $(LAUNCH_PLIST_FILENAME).in
+	$(QUIET)sudo $(INSTALL_DATA) -b $(basename $<) $(LAUNCH_PATH)/
+
+install.launch.show:
+	$(QUIET)cat -b $(LAUNCH_PATH)/$(LAUNCH_PLIST_FILENAME)
+#
+launchctl_load:
+	$(QUIET) sudo launchctl bootstrap user/$(USERID) $(LAUNCH_PATH)/$(LAUNCH_PLIST_FILENAME) | cat -b
+#
+launchctl_unload:
+	$(QUIET) sudo launchctl bootout user/$(USERID) $(LAUNCH_PATH)/$(LAUNCH_PLIST_FILENAME) | cat -b
+#
+launchctl_print:
+	$(QUIET) sudo launchctl print system/org.epics.archappl
+
+start:
+	$(QUIET) $(INSTALL_LOCATION)/$(APPNAME_MAIN_SCRIPT) startup
+
+stop:
+	$(QUIET) $(INSTALL_LOCATION)/$(APPNAME_MAIN_SCRIPT) shutdown
+
+status:
+	$(QUIET) $(INSTALL_LOCATION)/$(APPNAME_MAIN_SCRIPT) status
+endif

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -a
+# shellcheck source=/dev/null
+. "@APPNAME_TOP@/dbrw.conf"
+. "@APPNAME_TOP@/dbrw_settings.conf"
+set +a
+
+export CATALINA_BASE="@INSTALL_LOCATION@"
+export CATALINA_PID="@INSTALL_LOCATION@/temp/@SERVICE_NAME@.pid"
+"${CATALINA_HOME}/bin/shutdown.sh" "$@"
+printf ">>> %s Service @SERVICE_NAME@ stopped\n" "$APPFULLNAME";
