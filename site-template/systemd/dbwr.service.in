@@ -1,7 +1,8 @@
 [Unit]
 Description=@APPFULLNAME@ for @APPNAME_SITEID@
 Documentation=@DOCURL@
-After=network.target
+After=network.target pvws.service
+Requires=pvws.service
 
 SourcePath=@INSTALL_LOCATION@/@APPNAME_MAIN_SCRIPT@
 
