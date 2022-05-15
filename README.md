@@ -78,7 +78,7 @@ $ systemctl status dbwr
 ```
 
 ##
-* https://localhost:15587/dbwr
+* http://localhost:15587/dbwr
 
 ## Scripts
 
