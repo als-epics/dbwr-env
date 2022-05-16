@@ -88,12 +88,11 @@ conf.dbwr.show: $(APPNAME_CONF).in
 
 conf.dbwr_settings: conf.dbwr_settings.init $(SETTINGS_DBWR) 
 
-conf.dbwr_settings.init: $(SETTINGS_DBWR_CONF)
-	@$(shell [ -e $< ] && rm -- $< )
-	@touch $<
+conf.dbwr_settings.init: $(SETTINGS_DBWR_CONF).in
+	@scp $< $(basename $<)
 
 $(SETTINGS_DBWR): %: $(SETTINGS_DBWR_CONF)
-	@echo "$*=\"$($*)\""                           >> $<
+	@echo "$*=\"$($*)\""                           i>> $<
 	@echo "WHITELIST$(patsubst DBWR%,%,$(*))=\"\"" >> $<
 
 conf.dbwr_settings.show: $(SETTINGS_DBWR_CONF)
