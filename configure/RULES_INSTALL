@@ -31,11 +31,10 @@ confdbwr_settings.install: $(SETTINGS_DBWR_CONF)
 	$(QUIET)echo ">>> Install $< into $(INSTALL_LOCATION)/"
 	$(QUIET)$(SUDO) install $< $(INSTALL_LOCATION)/
 
-# SETTINGS_DBWR_CONF is generated in $(TOP)
 # 
 confdbwr_settings.show: $(SETTINGS_DBWR_CONF)
-	$(QUIET)echo ">>> Show the installed $(INSTALL_LOCATION)/$< "
-	$(QUIET)cat -bs $(INSTALL_LOCATION)/$<
+	$(QUIET)echo ">>> Show the installed $(INSTALL_LOCATION)/$(patsubst $(SITE_TEMPLATE_PATH)/%,%,$<) "
+	$(QUIET)cat -bs $(INSTALL_LOCATION)/$(patsubst $(SITE_TEMPLATE_PATH)/%,%,$<)
 
 # Three files are moved into $(ARCHAPPL_SITEID_CLASSPATHFILES_PATH) 
 # before build.ant. So these files are locatedin war files automatically.

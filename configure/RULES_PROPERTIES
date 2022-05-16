@@ -89,10 +89,13 @@ conf.dbwr.show: $(APPNAME_CONF).in
 conf.dbwr_settings: conf.dbwr_settings.init $(SETTINGS_DBWR) 
 
 conf.dbwr_settings.init: $(SETTINGS_DBWR_CONF).in
+	$(QUIET) echo ">>> Generate output, $(basename $<) from $<"
 	@scp $< $(basename $<)
+	@echo "# Please add WHITELIST if one needs it." > $(basename $<)
+    
 
 $(SETTINGS_DBWR): %: $(SETTINGS_DBWR_CONF)
-	@echo "$*=\"$($*)\""                           i>> $<
+	@echo "$*=\"$($*)\""                           >> $<
 	@echo "WHITELIST$(patsubst DBWR%,%,$(*))=\"\"" >> $<
 
 conf.dbwr_settings.show: $(SETTINGS_DBWR_CONF)
