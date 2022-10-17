@@ -24,18 +24,12 @@ MAVEN_OPTS+="-Dfile=$(APPNAME_WARS_TARGET_PATH)"
 #
 # The physical memory  :  64G, so I use 8G instead of 4G, since we don't have any other application on the server.
 # Set MaxMetaspaceSize : 256M, so it reduces the GC execution to compare with the original option.
-JAVA_HEAPSIZE="512m"
-JAVA_MAXMETASPACE="256m"
+WR_JAVA_HEAPSIZE="512m"
+WR_JAVA_MAXMETASPACE="256m"
 ## https://stackoverflow.com/questions/58991966/what-java-security-egd-option-is-for
 # https://www.openssl.org/blog/blog/2017/08/12/random/
-JAVA_OPTS="-Djava.security.egd=file:/dev/./urandom"
+WR_JAVA_OPTS="-Djava.security.egd=file:/dev/./urandom"
 #
-CATALINA_OPTS="-XX:MaxMetaspaceSize=$(JAVA_MAXMETASPACE)"
-CATALINA_OPTS+="-Xms$(JAVA_HEAPSIZE)"
-CATALINA_OPTS+="-Xmx$(JAVA_HEAPSIZE)"
-CATALINA_OPTS+="-XX:+UseG1GC"
-CATALINA_OPTS+="-ea"
-
 WR_USERID:=tomcat
 WR_GROUPID:=$(WR_USERID)
 

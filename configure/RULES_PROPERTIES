@@ -76,7 +76,7 @@ conf.dbwr: $(APPNAME_CONF).in
 	$(QUIET) echo ">>> Generate $(basename $<) from $<"
 	$(QUIET)sed -e "s:@INSTALL_LOCATION@:$(WR_INSTALL_LOCATION):g" \
 			 -e "s|@APPFULLNAME@|"$(APPFULLNAME)"|g" \
-			 -e "s:@JAVA_HOME@:$(JAVA_HOME):g" -e "s|@JAVA_OPTS@|$(JAVA_OPTS)|g" \
+			 -e "s:@JAVA_HOME@:$(JAVA_HOME):g" -e "s|@JAVA_OPTS@|$(WR_JAVA_OPTS)|g" \
 			 -e "s:@TOMCAT_HOME@:$(TOMCAT_HOME):g" -e "s|@CATALINA_OPTS@|$(CATALINA_OPTS)|g" \
 			< $< > $(basename $<)
 
