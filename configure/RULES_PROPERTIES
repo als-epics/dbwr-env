@@ -3,7 +3,7 @@
 ## ---> $(TOMCAT_HOME)/lib 
 ## APPNAME_LOG4JPROPERTIES:=log4j.properties
 ## 2. dbwr specific configuration file
-## ---> $(INSTALL_LOCATION)
+## ---> $(WR_INSTALL_LOCATION)
 ## APPNAME_CONF:=dbwr.conf
 ## SETTINGS_DBWR_CONF:=dbwr_settings.conf
 
@@ -62,7 +62,7 @@ conf.properties.show: $(show_properties_RULES)
 
 conf.mainscript: $(APPNAME_MAIN_SCRIPT).in
 	$(QUIET) echo ">>> Generate output, $(basename $<) from $<"
-	$(QUIET)sed -e "s:@INSTALL_LOCATION@:$(INSTALL_LOCATION):g" \
+	$(QUIET)sed -e "s:@INSTALL_LOCATION@:$(WR_INSTALL_LOCATION):g" \
 			    -e "s|@APPFULLNAME@|"$(APPFULLNAME)"|g" \
 	            -e "s|@APPNAME@|$(APPNiME)|g" \
 				-e "s|@APPNAME_SERVICES@|$(APPNAME_SERVICES)|g" \
@@ -74,7 +74,7 @@ conf.mainscript.show: $(APPNAME_MAIN_SCRIPT).in
 
 conf.dbwr: $(APPNAME_CONF).in 
 	$(QUIET) echo ">>> Generate $(basename $<) from $<"
-	$(QUIET)sed -e "s:@INSTALL_LOCATION@:$(INSTALL_LOCATION):g" \
+	$(QUIET)sed -e "s:@INSTALL_LOCATION@:$(WR_INSTALL_LOCATION):g" \
 			 -e "s|@APPFULLNAME@|"$(APPFULLNAME)"|g" \
 			 -e "s:@JAVA_HOME@:$(JAVA_HOME):g" -e "s|@JAVA_OPTS@|$(JAVA_OPTS)|g" \
 			 -e "s:@TOMCAT_HOME@:$(TOMCAT_HOME):g" -e "s|@CATALINA_OPTS@|$(CATALINA_OPTS)|g" \

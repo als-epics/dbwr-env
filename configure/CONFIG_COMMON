@@ -1,20 +1,17 @@
 
-JAVA_HOME:=/usr/lib/jvm/default-java
-MAVEN_HOME:=/usr/share/maven
-TOMCAT_HOME:=/usr/share/tomcat9
+JAVA_HOME=/usr
+MAVEN_HOME=/usr/share/maven
+TOMCAT_HOME=/usr/share/tomcat9
 
-JAVA_PATH:=$(JAVA_HOME)/bin
-MAVEN_PATH:=$(MAVEN_HOME)/bin
+JAVA_PATH=$(JAVA_HOME)/bin
+MAVEN_PATH=$(MAVEN_HOME)/bin
 
 PVWS?=localhost
 PVWS_PORT?=15577
 #URL of PV Web Socket when not co-located with dbwr.jar, for example ws://some.other.host.org:8081/pvws
-PVWS_URL:=ws://${PVWS}:${PVWS_PORT}/pvws
+PVWS_URL=ws://${PVWS}:${PVWS_PORT}/pvws
 
 # These allow developers to override the variable
 -include $(TOP)/../CONFIG_COMMON.local
 -include $(TOP)/configure/CONFIG_COMMON.local
--include $(TOP)/configure/CONFIG_COMMON_JDK.local
--include $(TOP)/configure/CONFIG_COMMON_ANT.local
--include $(TOP)/configure/CONFIG_COMMON_MAVEN.local
 
